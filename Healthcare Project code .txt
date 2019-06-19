@@ -1,0 +1,78 @@
+#Importing and viewing the dataset##
+
+library(readxl)
+hosp <- read_excel("C:/Business Analytics/Data Science with R Programing/R programming/Project/Projects for Submission/1555054100_hospitalcosts.xlsx")
+head(hosp)
+#Basic stats of the variables in the dataset##
+
+summary(hosp)
+
+#Solution
+attach(hosp)
+#to see the value of category of infants
+ag<-as.factor(AGE)
+summary(ag)
+
+#Inpatients Age Distribution
+agebar = summary(ag)
+agebarplt = barplot(agebar,xlab="Age",ylab="Inpatients Frequency",col="orange",main ='Inpatients Age Distribution',ylim = c(0,350))
+## Add text at top of bars
+text(x = agebarplt, y = agebar, label = agebar, pos = 3, cex = 0.8, col = "red")
+
+#Highest expenditure among all patients wrt age
+tapply(TOTCHG,AGE,max)
+maxexp= tapply(TOTCHG,AGE,max)
+
+#Max expenditure distribution by age
+maxexpplt=barplot(maxexp,xlab="Age",ylab="Max expenditure",col="blue",main = 'Maximum expenditure by Age',ylim = c(0,50000))
+## Add text at top of bars
+text(x = maxexpplt, y = maxexp, label = maxexp, pos = 3, cex = 0.6, col = "red")
+
+#to see count of distinct APRDRG  : All Patient Refined Diagnosis Related Groups  
+aprdg<-as.factor(APRDRG)
+summary(aprdg)
+
+#Finding the group with max frequency
+which.max(summary(aprdg))
+
+#APRDRG Distribution
+aprdgs = summary(aprdg)
+aprdgplt=barplot(aprdgs,xlab="All Patient Refined Diagnosis Related Groups",ylab="Frequency",col="yellow",main ='APRDRG Distribution',ylim = c(0,300))
+## Add text at top of bars
+text(x = aprdgplt, y = aprdgs, label = aprdgs, pos = 3, cex = 0.6, col = "black")
+
+#Diagnosis Group with maximum avg hospt expendiure
+tapply(TOTCHG,APRDRG,mean)
+maxexpdigs= tapply(TOTCHG,APRDRG,mean)
+
+#Diagnosis Group with maximum avg hospt expenditure & its Value
+
+which.max(maxexpdigs)
+max(maxexpdigs)
+
+#All Patient Refined Diagnosis Related Groups(APRDRG) Vs Avg hospt expenditure
+
+maxexpdigsplt=barplot(maxexpdigs,xlab='All Patient Refined Diagnosis Related Groups',ylab="Average Expenditure",col="blue",main = 'Average Expenditure of Diagnosis Related Groups',ylim = c(0,50000),cex.axis=0.8, cex.names =.7, las=2)
+
+#h0:The race of the patient is related to the hospitalization costs. 
+#ha:no relation
+rc<-as.factor(RACE)
+summary(rc)
+
+#now to omit na values from data set
+hospna<-na.omit(hosp)
+#Applying ANOVA
+modelannova<-aov(TOTCHG~RACE)
+summary(modelannova)
+
+#Fitting Linear Model1
+modelm1<-lm(TOTCHG~AGE+FEMALE)
+summary(modelm1)
+
+#Fitting Linear Model2
+modelm2<-lm(TOTCHG~AGE+FEMALE+RACE)
+summary(modelm2)
+
+#Fitting Linear Model3
+modelm3<-lm(hospna$TOTCHG~ .,data=hospna) 
+summary(modelm3)
